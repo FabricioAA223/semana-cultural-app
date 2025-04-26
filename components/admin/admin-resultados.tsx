@@ -158,8 +158,8 @@ export default function AdminResultados() {
       const posicionAnterior = teamAnterior?.posicionAnterior || teamActual.posicionActual;
       const posicionActual = teamActual.posicionActual;
   
-      let tendencia = posicionActual - posicionAnterior
-      let diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
+      const tendencia = posicionActual - posicionAnterior
+      const diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
   
       return {
         id: teamActual.id,
