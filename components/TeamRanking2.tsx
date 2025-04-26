@@ -122,7 +122,7 @@ export default function TeamRanking2() {
                       />
                     </td>
                     <td className="py-3 px-2 text-right font-bold">{equipo.score}</td>
-                    <td className="py-3 px-2 text-center">{getTendenciaIcon(equipo.trend)}</td>
+                    <td className="py-3 px-2 text-center">{equipo.trend} {getTendenciaIcon(equipo.trend)}</td>
                   </tr>
                 ))}
               </tbody>

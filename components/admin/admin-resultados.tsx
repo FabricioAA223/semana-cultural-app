@@ -202,7 +202,7 @@ export default function AdminResultados() {
     
       tendencias.forEach(({ id, tendencia }) => {
         const teamRef = doc(db, 'Teams', id);
-        batch.update(teamRef, { tendencia });
+        batch.update(teamRef, { trend:tendencia });
       });
 
       await actualizarHistorialTendencias(actividad, tendencias);
