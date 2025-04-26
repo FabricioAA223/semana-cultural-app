@@ -13,9 +13,8 @@ import { doc, updateDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 
 export default function AdminEquipos() {
-  const { teams, refreshData } = useData();
+  const { teams, refreshData, loading } = useData();
   const [equipos, setEquipos] = useState<Team[]>(teams)
-  const [loading, setLoading] = useState(false)
   const [guardando, setGuardando] = useState(false)
 
   useEffect(() => {
@@ -27,7 +26,7 @@ export default function AdminEquipos() {
   }
 
   const updateTeam = async (team: Team) => {
-    let docRef = doc(db, "Teams", team.id);
+    const docRef = doc(db, "Teams", team.id);
     await updateDoc(docRef, {...team});
   }
   const handleGuardarCambios = async () => {

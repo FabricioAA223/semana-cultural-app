@@ -43,7 +43,7 @@ export default function AdminResultados() {
 
       setLoading(false)
     }
-  }, [actividadSeleccionada])
+  }, [games, actividadSeleccionada])
 
   const handlePuntosChange = (posicion: number, puntos: number) => {
     setPosiciones(posiciones.map((pos) => (pos.posicion === posicion ? { ...pos, puntos: puntos } : pos)))
@@ -93,7 +93,7 @@ export default function AdminResultados() {
     const calificacion = posiciones.map((pos) => ({equipo:pos.equiposColors, puntos:pos.puntos}))
     console.log("Guardando: ", calificacion)
     console.log("Posiciones: ", posiciones)
-    let docRef = doc(db, "Games", actividadSeleccionada);
+    const docRef = doc(db, "Games", actividadSeleccionada);
     await updateDoc(docRef, {calificacion});
 
     toast.success("Resultados guardados", {

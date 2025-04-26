@@ -4,8 +4,24 @@ import type { Metadata } from 'next'
 import ClientLayout from '@/components/ClientLayout'
 
 export const metadata: Metadata = {
-  title: 'Semana Cultural 2025',
-  description: 'App para control de puntuaciones de la Semana Cultural',
+  title: 'Semana Cultural Los Ángeles y San Josecito',
+  description: 'Puntajes en tiempo real de la Semana Cultural',
+  keywords: ['Semana Cultural', 'Clasificación', 'Los Ángeles y San Josecito', 'Semana recreativa y deportiva', 'Semana cultural 2025'],
+  openGraph: {
+    title: 'Semana Cultural 2025',
+    description: 'Puntajes en tiempo real de la Semana Cultural',
+    url: 'https://semana-cultural.vercel.app',
+    siteName: 'Semana Cultural Los Ángeles y San Josecito',
+    images: [
+      {
+        url: '/logo-semana-cultural.png',
+        width: 800,
+        height: 600,
+      },
+    ],
+    locale: 'es_MX',
+    type: 'website',
+  },
   manifest: '/manifest.json',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
   themeColor: '#000000',
@@ -24,6 +40,9 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="dark">
       <head>
+        <meta name="description" content="Puntajes en tiempo real de la Semana Cultural" />
+        <meta name="keywords" content="Semana Cultural, Clasificación, Los Ángeles y San Josecito, Semana recreativa y deportiva, Semana cultural 2025" />
+        <meta name="author" content="Fabricio Alvarado" />
         <meta name="theme-color" content="#000000" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="apple-touch-icon" href="/icons/logo-semana-cultural.png" />

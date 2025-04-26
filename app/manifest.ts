@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Tabla de Clasificación",
-    short_name: "Clasificación",
+    name: "Semana Cultural Los Ángeles y San Josecito",
+    short_name: "Semana Cultural",
     description: "Tabla de clasificación de equipos",
     start_url: "/",
     display: "standalone",
@@ -11,17 +11,17 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#1e1e1e",
     icons: [
       {
-        src: "/icon-192x192.png",
+        src: "/icons/logo-semana-cultural.png",
         sizes: "192x192",
         type: "image/png",
       },
       {
-        src: "/icon-512x512.png",
+        src: "/icons/logo-semana-cultural.png",
         sizes: "512x512",
         type: "image/png",
       },
       {
-        src: "/icon-192x192.png",
+        src: "/icons/logo-semana-cultural.png",
         sizes: "192x192",
         type: "image/png",
         purpose: "maskable",

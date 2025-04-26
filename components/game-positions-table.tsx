@@ -119,7 +119,7 @@ export default function GamePositionsTable() {
                     </tr>
                   </thead>
                   <tbody>
-                    {califications.map((item, teamIndex) => (
+                    {califications.map((item) => (
                       <React.Fragment key={item.posicion}>
                         <tr
                           key={`${item.posicion}`}

@@ -10,7 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { useData } from "@/context/DataContext"
-import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from "firebase/firestore"
+import { deleteDoc, doc, setDoc, updateDoc } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Actividad } from "@/types"
 
@@ -44,7 +44,6 @@ export default function AdminCalendario() {
   const [actividadesAgrupadas, setActividadesAgrupadas] = useState<{ fecha: string; actividades: Actividad[] }[]>([])
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("")
 
-  // Simular carga de datos desde Firebase
   useEffect(() => {
     setLoading(true)
 
@@ -63,7 +62,7 @@ export default function AdminCalendario() {
     }
 
     setLoading(false)
-  }, [])
+  }, [teams, activities])
 
   // Actualizar agrupación cuando cambian las actividades
   useEffect(() => {
@@ -107,8 +106,6 @@ export default function AdminCalendario() {
 
   const eliminarActividad = async(titulo: string) => {
     if (confirm("¿Estás seguro de que deseas eliminar esta actividad?")) {
-      const nuevasActividades = activities.filter((act) => act.titulo !== titulo)
-
       const docRef = doc(db, "Activities", titulo);
       await deleteDoc(docRef);
 
@@ -511,10 +508,10 @@ export default function AdminCalendario() {
               <label className="text-sm font-medium text-zinc-300">Tipo de actividad *</label>
               <Select
                 value={actividadSeleccionada.tipo}
-                onValueChange={(value) => handleInputChange("tipo", value as any)}
+                onValueChange={(value) => handleInputChange("tipo", value as string)}
               >
                 <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white">
-                  <SelectValue />
+                  <SelectValue placeholder="Selecciona una opción" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-700 border-zinc-600 text-white">
                   <SelectItem value="competencia" className="focus:bg-zinc-600 focus:text-white">
@@ -532,10 +529,10 @@ export default function AdminCalendario() {
                 <label className="text-sm font-medium text-zinc-300">Tipo de competencia *</label>
                 <Select
                   value={actividadSeleccionada.tipoCompetencia || "enfrentamiento"}
-                  onValueChange={(value) => handleInputChange("tipoCompetencia", value as any)}
+                  onValueChange={(value) => handleInputChange("tipoCompetencia", value as string)}
                 >
                   <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white">
-                    <SelectValue />
+                    <SelectValue  placeholder="Selecciona una opción"/>
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-700 border-zinc-600 text-white">
                     <SelectItem value="enfrentamiento" className="focus:bg-zinc-600 focus:text-white">
@@ -615,7 +612,7 @@ export default function AdminCalendario() {
                   </p>
                 ) : (
                   <div className="space-y-3">
-                    {actividadSeleccionada.enfrentamientos.map((enfrentamiento, index) => (
+                    {actividadSeleccionada.enfrentamientos.map((enfrentamiento) => (
                       <div
                         key={enfrentamiento.id}
                         className="grid grid-cols-9 gap-2 items-center bg-zinc-700 p-2 rounded"
