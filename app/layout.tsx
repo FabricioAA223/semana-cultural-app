@@ -43,11 +43,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="dark">
       <head>
-        <meta name="description" content="Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025" />
-        <meta name="keywords" content="Semana Cultural, Clasificación, Los Ángeles y San Josecito, Semana recreativa y deportiva, Semana cultural 2025" />
         <meta name="author" content="Fabricio Alvarado" />
-        <meta name="theme-color" content="#000000" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="apple-touch-icon" href="/icons/logo-semana-cultural.png" />
       </head>
       <body className="bg-zinc-900 text-white pb-14">
