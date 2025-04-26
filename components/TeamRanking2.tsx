@@ -52,15 +52,13 @@ export default function TeamRanking2() {
     );
   }
 
-  const getTendenciaIcon = (tendencia: string) => {
-    switch (tendencia) {
-      case "up":
+  const getTendenciaIcon = (tendencia: number) => {
+      if (tendencia > 0)
         return <ChevronUp color="green" style={{margin:'auto'}}/>
-      case "down":
+      else if (tendencia < 0)
         return <ChevronDown color="red" style={{margin:'auto'}}/>
-      default:
+      else
         return <Minus color="lightgray" style={{margin:'auto'}}/>
-    }
   }
 
   return (

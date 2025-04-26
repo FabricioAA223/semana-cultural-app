@@ -109,7 +109,7 @@ export default function CalendarioActividades() {
   }
 
   return (
-    <div className="w-full mx-auto bg-zinc-900 min-h-screen text-white">
+    <div className="w-full mx-auto bg-zinc-900 text-white">
       <Card className="border-none bg-transparent rounded-none sm:rounded-lg sm:mx-auto sm:max-w-md">
         <CardHeader className="pb-2 px-3 sm:px-6">
           <CardTitle className="text-xl sm:text-2xl font-bold text-center">Calendario de Actividades</CardTitle>

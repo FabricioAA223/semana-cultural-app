@@ -3,14 +3,14 @@ export interface Team {
     id: string;
     name: string;
     score: number;
-    trend: string;
+    trend: number;
   }
 
 export interface TeamExtended {
     id: string;
     name: string;
     score: number;
-    trend: string;
+    trend: number;
     logo: string;
     color: string;
   }

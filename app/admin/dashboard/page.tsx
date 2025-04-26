@@ -47,7 +47,7 @@ export default function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-zinc-900 pb-16">
+    <div className="min-h-screen bg-zinc-900">
       <header className="bg-zinc-800 border-b border-zinc-700 p-4 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto flex justify-between items-center">
           <h1 className="text-xl font-bold text-white">Panel de Administración</h1>

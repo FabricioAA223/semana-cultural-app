@@ -9,10 +9,11 @@ import { Loader2, Save, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
 import { useData } from "@/context/DataContext"
-import { Posicion } from "@/types"
+import { Posicion, Team } from "@/types"
 import { getColorByTeamName } from "@/utils/equiposColors"
-import { doc, updateDoc } from "firebase/firestore"
+import { collection, doc, getDocs, increment, updateDoc, writeBatch } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { Checkbox } from "../ui/checkbox"
 
 // Tipo para los resultados
 type PosicionWithIndex = {
@@ -22,8 +23,11 @@ type PosicionWithIndex = {
 }
 
 export default function AdminResultados() {
-  const { teams, games } = useData();
+  const { teams, games, refreshData } = useData();
   const [actividadSeleccionada, setActividadSeleccionada] = useState("")
+  const [jugado, setJugado] = useState(false);
+  const [jugadoOriginal, setJugadoOriginal] = useState(false);
+  const [posicionesOriginal, setPosicionesOriginal] = useState<PosicionWithIndex[]>([])
   const [posiciones, setPosiciones] = useState<PosicionWithIndex[]>([])
   const [loading, setLoading] = useState(false)
   const [guardando, setGuardando] = useState(false)
@@ -35,11 +39,16 @@ export default function AdminResultados() {
       const resultadosActividad = games.find((game) => game.id === actividadSeleccionada)?.calificacion || []
 
       const nuevasPosiciones = resultadosActividad.map((pos: Posicion, index) => ({
-        posicion: index+1,
+        posicion: index + 1,
         puntos: pos.puntos,
         equiposColors: pos.equipo ?? [],
       }))
       setPosiciones(nuevasPosiciones)
+      setPosicionesOriginal(nuevasPosiciones)
+
+      const jugado = games.find((game) => game.id === actividadSeleccionada)?.jugado || false
+      setJugadoOriginal(jugado)
+      setJugado(jugado)
 
       setLoading(false)
     }
@@ -62,7 +71,7 @@ export default function AdminResultados() {
       posiciones.map((pos) =>
         pos.posicion === posicion ? { ...pos, equiposColors: pos.equiposColors.filter((id) => id !== equipoColor) } : pos,
       ),
-    ) 
+    )
   }
 
   const handleGuardarResultados = async () => {
@@ -90,18 +99,182 @@ export default function AdminResultados() {
       return
     }
 
-    const calificacion = posiciones.map((pos) => ({equipo:pos.equiposColors, puntos:pos.puntos}))
-    console.log("Guardando: ", calificacion)
-    console.log("Posiciones: ", posiciones)
-    const docRef = doc(db, "Games", actividadSeleccionada);
-    await updateDoc(docRef, {calificacion});
+    try {
+      const docRef = doc(db, "Games", actividadSeleccionada);
+      const updateData = {
+        calificacion: posiciones.map((pos) => ({ equipo: pos.equiposColors, puntos: pos.puntos })),
+        jugado: jugado
+      };
 
-    toast.success("Resultados guardados", {
-      description: "Los resultados han sido actualizados correctamente.",
+      await updateDoc(docRef, updateData);
+
+      const huboCambioJugado = jugado !== jugadoOriginal;
+      const huboCambioPosiciones = posiciones !== posicionesOriginal;
+
+      if (huboCambioJugado || (huboCambioPosiciones && jugado)) {
+        await actualizarPuntajesGenerales(
+          actividadSeleccionada,
+          jugado,
+          jugadoOriginal,
+          posiciones,
+          posicionesOriginal
+        );
+      }
+
+      toast.success("Resultados guardados", {
+        description: "Los resultados han sido actualizados correctamente.",
+      });
+
+      // Actualizamos el estado original para futuras comparaciones
+      setJugadoOriginal(jugado);
+      setPosicionesOriginal(posiciones)
+    } catch (error) {
+      toast.error("Error al guardar", {
+        description: "Ocurrió un error al intentar guardar los resultados.",
+      });
+      console.error("Error al guardar:", error);
+    } finally {
+      setGuardando(false);
+    }
+  };
+
+  const calcularTendencias = (
+    teamsAnteriores: Team[], // Lista original de equipos con sus puntos anteriores
+    teamsActualizados: Team[], // Lista actualizada de equipos con nuevos puntos
+  ) => {
+    // Ordenar equipos anteriores por puntos (descendente)
+    const rankingAnterior = [...teamsAnteriores]
+      .sort((a, b) => b.score - a.score)
+      .map((team, index) => ({ ...team, posicionAnterior: index + 1 }));
+  
+    // Ordenar equipos actualizados por puntos (descendente)
+    const rankingActual = [...teamsActualizados]
+      .sort((a, b) => b.score - a.score)
+      .map((team, index) => ({ ...team, posicionActual: index + 1 }));
+  
+    // Combinar la información y calcular tendencias
+    return rankingActual.map(teamActual => {
+      const teamAnterior = rankingAnterior.find(t => t.id === teamActual.id);
+      const posicionAnterior = teamAnterior?.posicionAnterior || teamActual.posicionActual;
+      const posicionActual = teamActual.posicionActual;
+  
+      let tendencia = posicionActual - posicionAnterior
+      let diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
+  
+      return {
+        id: teamActual.id,
+        tendencia,
+        posicionAnterior,
+        posicionActual,
+        puntosAnteriores: teamAnterior?.score,
+        puntosActuales: teamActual.score,
+        diferenciaPuntos
+      };
     })
+  };
 
-    setGuardando(false)
-  }
+  const actualizarPuntajesGenerales = async (
+    actividad: string,
+    jugadoActual: boolean,
+    jugadoAnterior: boolean,
+    posicionesActuales: PosicionWithIndex[],
+    posicionesOriginales?: PosicionWithIndex[]
+  ) => {
+    const batch = writeBatch(db);
+  
+    // Caso 1: Cambio en estado jugado (de no jugado a jugado)
+    if (jugadoActual && !jugadoAnterior) {
+      // Sumar puntos a todos los equipos
+      for (const posicion of posicionesActuales) {
+        for (const equipoId of posicion.equiposColors) {
+          const equipoRef = doc(db, "Teams", equipoId);
+          batch.update(equipoRef, {
+            score: increment(posicion.puntos)
+          });
+        }
+      }
+      // Calcular nuevos puntos para determinar tendencias
+      const teamsRef = collection(db, 'Teams');
+      const snapshot = await getDocs(teamsRef);
+      const teamsActualizados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Team));
+
+      const tendencias = calcularTendencias(teams, teamsActualizados);
+    
+      tendencias.forEach(({ id, tendencia }) => {
+        const teamRef = doc(db, 'Teams', id);
+        batch.update(teamRef, { tendencia });
+      });
+
+      await actualizarHistorialTendencias(actividad, tendencias);
+    }
+    // Caso 2: Cambio en estado jugado (de jugado a no jugado)
+    else if (!jugadoActual && jugadoAnterior && posicionesOriginales) {
+      // Restar puntos que habían sido sumados previamente
+      for (const posicion of posicionesOriginales) {
+        for (const equipoId of posicion.equiposColors) {
+          const equipoRef = doc(db, "Teams", equipoId);
+          batch.update(equipoRef, {
+            score: increment(-posicion.puntos)
+          });
+        }
+      }
+    }
+    // Caso 3: Cambio en posiciones con juego jugado
+    else if (jugadoActual && posicionesOriginales) {
+      // Primero revertimos los puntos originales (restamos)
+      for (const posicion of posicionesOriginales) {
+        for (const equipoId of posicion.equiposColors) {
+          const equipoRef = doc(db, "Teams", equipoId);
+          batch.update(equipoRef, {
+            score: increment(-posicion.puntos)
+          });
+        }
+      }
+  
+      // Luego aplicamos los nuevos puntos (sumamos)
+      for (const posicion of posicionesActuales) {
+        for (const equipoId of posicion.equiposColors) {
+          const equipoRef = doc(db, "Teams", equipoId);
+          batch.update(equipoRef, {
+            score: increment(posicion.puntos)
+          });
+        }
+      }
+    }
+
+
+  
+    try {
+      await batch.commit();
+      await refreshData()
+      
+      return true;
+    } catch (error) {
+      console.error("Error al actualizar puntajes:", error);
+      throw error;
+    }
+  };
+
+  const actualizarHistorialTendencias = async (gameId: string, tendencias: { id: string; tendencia: number; posicionAnterior: number; posicionActual: number; puntosAnteriores: number | undefined; puntosActuales: number; diferenciaPuntos: number; }[]) => {
+    const batch = writeBatch(db);
+    const timestamp = new Date().toISOString();
+  
+    tendencias.forEach(({ id, tendencia, posicionAnterior, posicionActual, puntosAnteriores, puntosActuales, diferenciaPuntos }) => {
+      const historialRef = doc(db, 'Teams', id, 'historial', gameId);
+      batch.set(historialRef, {
+        fecha: timestamp,
+        juegoId: gameId,
+        posicionAnterior,
+        posicionActual,
+        cambioPosicion: tendencia,
+        puntosAnteriores,
+        puntosActuales,
+        diferenciaPuntos,
+      }, { merge: true });
+    });
+
+    await batch.commit();
+  };
 
   // Obtener equipos disponibles (no asignados a otras posiciones)
   const getEquiposDisponibles = () => {
@@ -205,7 +378,7 @@ export default function AdminResultados() {
                               <div className="text-zinc-400 text-sm mb-2">No hay equipos asignados</div>
                             )}
 
-                            {getEquiposDisponibles().length > 0 ? (
+                            {getEquiposDisponibles().length > 0 && (
                               <Select
                                 onValueChange={(value) => {
                                   const equipoId = value
@@ -235,20 +408,38 @@ export default function AdminResultados() {
                                   ))}
                                 </SelectContent>
                               </Select>
-                            ) : (
-                              <div className="text-zinc-400 text-xs italic">
-                                No hay más equipos disponibles para asignar
-                              </div>
-                            )}
+                            ) 
+                            // : (
+                            //   <div className="text-zinc-400 text-xs italic">
+                            //     No hay más equipos disponibles para asignar
+                            //   </div>
+                            // )
+                            }
                           </div>
                         </div>
                       </div>
                     ))}
 
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="jugado-checkbox"
+                        checked={jugado}
+                        onCheckedChange={(checked: boolean) => setJugado(checked)}
+                        className="border-zinc-600 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                        style={{ minWidth: '20px', minHeight: '20px' }}
+                      />
+                      <label
+                        htmlFor="jugado-checkbox"
+                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-zinc-300"
+                      >
+                        Actividad jugada
+                      </label>
+                    </div>
+
                     <div className="flex justify-end mt-6">
                       <Button
                         onClick={handleGuardarResultados}
-                        disabled={guardando}
+                        disabled={guardando || (posicionesOriginal == posiciones && jugado == jugadoOriginal)}
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         {guardando ? (
