@@ -1,2 +1,9 @@
+# *
 User-agent: *
 Allow: /
+
+# Host
+Host: https://semana-cultural.vercel.app
+
+# Sitemaps
+Sitemap: https://semana-cultural.vercel.app/sitemap.xml

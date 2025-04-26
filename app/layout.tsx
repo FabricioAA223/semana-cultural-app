@@ -5,16 +5,19 @@ import ClientLayout from '@/components/ClientLayout'
 
 export const metadata: Metadata = {
   title: 'Semana Cultural Los Ángeles y San Josecito',
-  description: 'Puntajes en tiempo real de la Semana Cultural',
+  description: 'Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025',
   keywords: ['Semana Cultural', 'Clasificación', 'Los Ángeles y San Josecito', 'Semana recreativa y deportiva', 'Semana cultural 2025'],
+  other: {
+    'google-site-verification': '8EyjH7a1Z9EWnsCHDwfnNq4D4_aSmtPL2jjpz--YZ6o',
+  },
   openGraph: {
     title: 'Semana Cultural 2025',
-    description: 'Puntajes en tiempo real de la Semana Cultural',
+    description: 'Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025',
     url: 'https://semana-cultural.vercel.app',
     siteName: 'Semana Cultural Los Ángeles y San Josecito',
     images: [
       {
-        url: '/logo-semana-cultural.png',
+        url: 'icons/logo-semana-cultural.png',
         width: 800,
         height: 600,
       },
@@ -28,7 +31,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Tabla de Clasificación',
+    title: 'Semana Cultural 2025',
   },
 }
 
@@ -40,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="dark">
       <head>
-        <meta name="description" content="Puntajes en tiempo real de la Semana Cultural" />
+        <meta name="description" content="Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025" />
         <meta name="keywords" content="Semana Cultural, Clasificación, Los Ángeles y San Josecito, Semana recreativa y deportiva, Semana cultural 2025" />
         <meta name="author" content="Fabricio Alvarado" />
         <meta name="theme-color" content="#000000" />

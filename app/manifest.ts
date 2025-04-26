@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next"
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Semana Cultural Los Ángeles y San Josecito",
-    short_name: "Semana Cultural",
-    description: "Tabla de clasificación de equipos",
+    short_name: "Semana Cultural 2025",
+    description: "Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025",
     start_url: "/",
     display: "standalone",
     background_color: "#1e1e1e",
