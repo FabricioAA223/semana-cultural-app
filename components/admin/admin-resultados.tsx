@@ -14,7 +14,6 @@ import { getColorByTeamName } from "@/utils/equiposColors"
 import { collection, doc, getDocs, increment, updateDoc, writeBatch } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Checkbox } from "../ui/checkbox"
-import { getActualDate } from "@/utils/getDate"
 
 // Tipo para los resultados
 type PosicionWithIndex = {
@@ -142,8 +141,6 @@ export default function AdminResultados() {
     teamsAnteriores: Team[], // Lista original de equipos con sus puntos anteriores
     teamsActualizados: Team[], // Lista actualizada de equipos con nuevos puntos
   ) => {
-    console.log("Anteriores: ", teamsAnteriores)
-    console.log("Nuevos: ", teamsActualizados)
     // Ordenar equipos anteriores por puntos (descendente)
     const rankingAnterior = [...teamsAnteriores]
       .sort((a, b) => b.score - a.score)
@@ -159,8 +156,9 @@ export default function AdminResultados() {
       const teamAnterior = rankingAnterior.find(t => t.id === teamActual.id);
       const posicionAnterior = teamAnterior?.posicionAnterior || teamActual.posicionActual;
       const posicionActual = teamActual.posicionActual;
-  
       const tendencia = posicionAnterior - posicionActual
+      console.log("El equipo ", teamActual.name, " pasó de ", posicionAnterior, " a ", posicionActual, " entonces un trend de ", tendencia)
+
       // const diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
   
       return {
