@@ -11,7 +11,7 @@ import { toast } from "sonner"
 import { useData } from "@/context/DataContext"
 import { Posicion, Team } from "@/types"
 import { getColorByTeamName } from "@/utils/equiposColors"
-import { collection, doc, getDocs, increment, updateDoc, writeBatch } from "firebase/firestore"
+import { collection, doc, getDocs, increment, orderBy, query, updateDoc, writeBatch } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Checkbox } from "../ui/checkbox"
 
@@ -142,14 +142,10 @@ export default function AdminResultados() {
     teamsActualizados: Team[], // Lista actualizada de equipos con nuevos puntos
   ) => {
     // Ordenar equipos anteriores por puntos (descendente)
-    const rankingAnterior = [...teamsAnteriores]
-      .sort((a, b) => b.score - a.score)
-      .map((team, index) => ({ ...team, posicionAnterior: index + 1 }));
+    const rankingAnterior = [...teamsAnteriores].map((team, index) => ({ ...team, posicionAnterior: index + 1 }));
   
     // Ordenar equipos actualizados por puntos (descendente)
-    const rankingActual = [...teamsActualizados]
-      .sort((a, b) => b.score - a.score)
-      .map((team, index) => ({ ...team, posicionActual: index + 1 }));
+    const rankingActual = [...teamsActualizados].map((team, index) => ({ ...team, posicionActual: index + 1 }));
   
     // Combinar la información y calcular tendencias
     return rankingActual.map(teamActual => {
@@ -244,7 +240,8 @@ export default function AdminResultados() {
   const updateTrend = async () => {
     // Calcular nuevos puntos para determinar tendencias
     const teamsRef = collection(db, 'Teams');
-    const snapshot = await getDocs(teamsRef);
+    const q = query(teamsRef, orderBy("score", "desc"));
+    const snapshot = await getDocs(q);
     const teamsActualizados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Team));
 
     const tendencias = calcularTendencias(teams, teamsActualizados);
