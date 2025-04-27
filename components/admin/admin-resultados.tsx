@@ -374,6 +374,7 @@ export default function AdminResultados() {
                                         size="sm"
                                         className="h-4 w-4 p-0 ml-1 text-zinc-400 hover:text-red-500 hover:bg-transparent"
                                         onClick={() => handleQuitarEquipo(posicion.posicion, equipoId)}
+                                        style={{ minWidth: '20px', minHeight: '20px' }}
                                       >
                                         <Trash2 className="h-3 w-3" />
                                       </Button>

@@ -55,6 +55,18 @@ const TipoBadge = ({ tipo }: { tipo: string }) => {
   }
 }
 
+// Componente para el badge de tipo de actividad
+const TipoCompetenciaBadge = ({ tipo }: { tipo: string }) => {
+  switch (tipo) {
+    case "enfrentamiento":
+      return <Badge className="bg-amber-600">1vs1</Badge>
+    case "otro":
+      return <Badge>Otro</Badge>
+    default:
+      return <Badge className="bg-teal-600">Grupal</Badge>
+  }
+}
+
 // Agrupar actividades por fecha
 const agruparPorFecha = (actividades: Actividad[]) => {
   const grupos: Record<string, Actividad[]> = {}
@@ -144,6 +156,7 @@ export default function CalendarioActividades() {
                               <div className="flex items-center gap-2">
                                 <h3 className="font-semibold text-white">{actividad.titulo}</h3>
                                 <TipoBadge tipo={actividad.tipo} />
+                                <TipoCompetenciaBadge tipo={actividad.tipoCompetencia || "otro"} />
                               </div>
                               <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300">
                                 <div className="flex items-center gap-1">
@@ -208,7 +221,7 @@ export default function CalendarioActividades() {
                                       {actividad.grupos.map((grupo, index) => (
                                         <div key={grupo.id} className="bg-zinc-700 p-2 rounded my-3">
                                           <h5 className="text-xs font-medium text-zinc-300 mb-2">Grupo {index + 1}</h5>
-                                          <div className="flex flex-wrap gap-2">
+                                          <div className="flex-wrap gap-2">
                                             {grupo.equipos.map((equipoCode) => (
                                               <div
                                                 key={equipoCode}
