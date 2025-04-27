@@ -53,12 +53,12 @@ export default function TeamRanking2() {
   }
 
   const getTendenciaIcon = (tendencia: number) => {
-      if (tendencia > 0)
-        return <ChevronUp color="green" style={{margin:'auto'}}/>
-      else if (tendencia < 0)
-        return <ChevronDown color="red" style={{margin:'auto'}}/>
-      else
-        return <Minus color="lightgray" style={{margin:'auto'}}/>
+    if (tendencia > 0)
+      return <ChevronUp color="green" style={{margin:'auto'}}/>
+    else if (tendencia < 0)
+      return <ChevronDown color="red" style={{margin:'auto'}}/>
+    else
+      return <Minus color="lightgray" style={{margin:'auto'}}/>
   }
 
   return (
@@ -122,7 +122,13 @@ export default function TeamRanking2() {
                       />
                     </td>
                     <td className="py-3 px-2 text-right font-bold">{equipo.score}</td>
-                    <td className="py-3 px-2 text-center">{equipo.trend} {getTendenciaIcon(equipo.trend)}</td>
+                    <td className="py-3 px-2 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        {getTendenciaIcon(equipo.trend)}
+                        <span>{equipo.trend != 0 ? Math.abs(equipo.trend) : null
+                        }</span>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>

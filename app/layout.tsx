@@ -26,8 +26,6 @@ export const metadata: Metadata = {
     type: 'website',
   },
   manifest: '/manifest.json',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no',
-  themeColor: '#000000',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
@@ -43,6 +41,8 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning className="dark">
       <head>
+        <meta name="theme-color" content="#000000" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="author" content="Fabricio Alvarado" />
         <link rel="apple-touch-icon" href="/icons/logo-semana-cultural.png" />
       </head>

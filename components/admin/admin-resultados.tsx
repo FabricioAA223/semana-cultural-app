@@ -14,6 +14,7 @@ import { getColorByTeamName } from "@/utils/equiposColors"
 import { collection, doc, getDocs, increment, updateDoc, writeBatch } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import { Checkbox } from "../ui/checkbox"
+import { getActualDate } from "@/utils/getDate"
 
 // Tipo para los resultados
 type PosicionWithIndex = {
@@ -113,7 +114,6 @@ export default function AdminResultados() {
 
       if (huboCambioJugado || (huboCambioPosiciones && jugado)) {
         await actualizarPuntajesGenerales(
-          actividadSeleccionada,
           jugado,
           jugadoOriginal,
           posiciones,
@@ -142,6 +142,8 @@ export default function AdminResultados() {
     teamsAnteriores: Team[], // Lista original de equipos con sus puntos anteriores
     teamsActualizados: Team[], // Lista actualizada de equipos con nuevos puntos
   ) => {
+    console.log("Anteriores: ", teamsAnteriores)
+    console.log("Nuevos: ", teamsActualizados)
     // Ordenar equipos anteriores por puntos (descendente)
     const rankingAnterior = [...teamsAnteriores]
       .sort((a, b) => b.score - a.score)
@@ -158,23 +160,22 @@ export default function AdminResultados() {
       const posicionAnterior = teamAnterior?.posicionAnterior || teamActual.posicionActual;
       const posicionActual = teamActual.posicionActual;
   
-      const tendencia = posicionActual - posicionAnterior
-      const diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
+      const tendencia = posicionAnterior - posicionActual
+      // const diferenciaPuntos = teamActual.score - (teamAnterior?.score || 0)
   
       return {
         id: teamActual.id,
         tendencia,
-        posicionAnterior,
-        posicionActual,
-        puntosAnteriores: teamAnterior?.score,
-        puntosActuales: teamActual.score,
-        diferenciaPuntos
+        // posicionAnterior,
+        // posicionActual,
+        // puntosAnteriores: teamAnterior?.score,
+        // puntosActuales: teamActual.score,
+        // diferenciaPuntos
       };
     })
   };
 
   const actualizarPuntajesGenerales = async (
-    actividad: string,
     jugadoActual: boolean,
     jugadoAnterior: boolean,
     posicionesActuales: PosicionWithIndex[],
@@ -193,19 +194,6 @@ export default function AdminResultados() {
           });
         }
       }
-      // Calcular nuevos puntos para determinar tendencias
-      const teamsRef = collection(db, 'Teams');
-      const snapshot = await getDocs(teamsRef);
-      const teamsActualizados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Team));
-
-      const tendencias = calcularTendencias(teams, teamsActualizados);
-    
-      tendencias.forEach(({ id, tendencia }) => {
-        const teamRef = doc(db, 'Teams', id);
-        batch.update(teamRef, { trend:tendencia });
-      });
-
-      await actualizarHistorialTendencias(actividad, tendencias);
     }
     // Caso 2: Cambio en estado jugado (de jugado a no jugado)
     else if (!jugadoActual && jugadoAnterior && posicionesOriginales) {
@@ -242,10 +230,10 @@ export default function AdminResultados() {
       }
     }
 
-
-  
     try {
       await batch.commit();
+      if (jugadoActual && !jugadoAnterior) 
+        await updateTrend();
       await refreshData()
       
       return true;
@@ -255,13 +243,32 @@ export default function AdminResultados() {
     }
   };
 
+  const updateTrend = async () => {
+    // Calcular nuevos puntos para determinar tendencias
+    const teamsRef = collection(db, 'Teams');
+    const snapshot = await getDocs(teamsRef);
+    const teamsActualizados = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Team));
+
+    const tendencias = calcularTendencias(teams, teamsActualizados);
+    console.log("Tendencias: ", tendencias)
+    // const timestamp = getActualDate()
+
+    tendencias.forEach(async ({ id, tendencia }) => {
+      const teamRef = doc(db, 'Teams', id);
+      await updateDoc(teamRef, { trend:tendencia }); // , version: {fecha: timestamp, actividad: actividad}
+    });
+
+    // await actualizarHistorialTendencias(actividad, tendencias);
+  }
+
+  /*
   const actualizarHistorialTendencias = async (gameId: string, tendencias: { id: string; tendencia: number; posicionAnterior: number; posicionActual: number; puntosAnteriores: number | undefined; puntosActuales: number; diferenciaPuntos: number; }[]) => {
     const batch = writeBatch(db);
-    const timestamp = new Date().toISOString();
+    const timestamp = getActualDate()
   
     tendencias.forEach(({ id, tendencia, posicionAnterior, posicionActual, puntosAnteriores, puntosActuales, diferenciaPuntos }) => {
-      const historialRef = doc(db, 'Teams', id, 'historial', gameId);
-      batch.set(historialRef, {
+      const historialRef = doc(db, 'Teams', id);
+      batch.set(historialRef, {historial: {
         fecha: timestamp,
         juegoId: gameId,
         posicionAnterior,
@@ -270,11 +277,11 @@ export default function AdminResultados() {
         puntosAnteriores,
         puntosActuales,
         diferenciaPuntos,
-      }, { merge: true });
+      }});
     });
 
     await batch.commit();
-  };
+  }; */
 
   // Obtener equipos disponibles (no asignados a otras posiciones)
   const getEquiposDisponibles = () => {
