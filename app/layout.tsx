@@ -6,7 +6,7 @@ import ClientLayout from '@/components/ClientLayout'
 export const metadata: Metadata = {
   title: 'Semana Cultural Los Ángeles y San Josecito',
   description: 'Página oficial de la Semana Cultural Los Ángeles y San Josecito 2025',
-  keywords: ['Semana Cultural', 'Clasificación', 'Los Ángeles y San Josecito', 'Semana recreativa y deportiva', 'Semana cultural 2025'],
+  keywords: ['Semana Cultural', 'Clasificación', 'Los Ángeles y San Josecito', 'Semana recreativa y deportiva', 'Semana cultural 2025', 'Semana Los Angeles y San Josecito 2025', '2025'],
   other: {
     'google-site-verification': '8EyjH7a1Z9EWnsCHDwfnNq4D4_aSmtPL2jjpz--YZ6o',
   },

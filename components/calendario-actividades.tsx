@@ -156,7 +156,7 @@ export default function CalendarioActividades() {
                               <div className="flex items-center gap-2">
                                 <h3 className="font-semibold text-white">{actividad.titulo}</h3>
                                 <TipoBadge tipo={actividad.tipo} />
-                                <TipoCompetenciaBadge tipo={actividad.tipoCompetencia || "otro"} />
+                                {actividad.tipo == "competencia" && <TipoCompetenciaBadge tipo={actividad.tipoCompetencia || "otro"} />}
                               </div>
                               <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300">
                                 <div className="flex items-center gap-1">
