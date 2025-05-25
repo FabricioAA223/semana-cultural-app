@@ -20,7 +20,7 @@ const getColorEquipo = (colorCode: string) => {
     case "red":
       return "#c0392b"
     case "black":
-      return "#2c3e50"
+      return "#000"
     case "green":
       return "#27ae60"
     case "purple":
@@ -59,11 +59,15 @@ const TipoBadge = ({ tipo }: { tipo: string }) => {
 const TipoCompetenciaBadge = ({ tipo }: { tipo: string }) => {
   switch (tipo) {
     case "enfrentamiento":
-      return <Badge className="bg-amber-600">1vs1</Badge>
+      return <Badge className="bg-amber-600">Duelos</Badge>
     case "otro":
       return <Badge>Otro</Badge>
+    case "individual":
+      return <Badge className="bg-lime-600">Individual</Badge>
+    case "todos":
+      return null
     default:
-      return <Badge className="bg-teal-600">Grupal</Badge>
+      return <Badge className="bg-teal-600">Por grupos</Badge>
   }
 }
 
@@ -103,7 +107,7 @@ export default function CalendarioActividades() {
   useEffect(() => {
     const diaSeleccionado = diasActividades.find((dia) => dia.nombre === diaActivo)
     if (diaSeleccionado) {
-      setActividadesFiltradas(diaSeleccionado.actividades)
+      setActividadesFiltradas(diaSeleccionado.actividades.sort((a, b) => a.hora.localeCompare(b.hora)))
     }
   }, [diasActividades, diaActivo])
 
@@ -152,28 +156,32 @@ export default function CalendarioActividades() {
                       <Collapsible key={actividad.id} className="rounded-lg border border-zinc-600 overflow-hidden">
                         <div className="bg-zinc-800 p-3">
                           <div className="flex justify-between items-start">
-                            <div>
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-white">{actividad.titulo}</h3>
                               <div className="flex items-center gap-2">
-                                <h3 className="font-semibold text-white">{actividad.titulo}</h3>
-                                <TipoBadge tipo={actividad.tipo} />
-                                {actividad.tipo == "competencia" && <TipoCompetenciaBadge tipo={actividad.tipoCompetencia || "otro"} />}
-                              </div>
-                              <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300">
-                                <div className="flex items-center gap-1">
-                                  <Clock size={14} />
-                                  <span>{actividad.hora}</span>
+                                <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300 flex-1">
+                                  <div className="flex items-center gap-1">
+                                    <Clock size={14} />
+                                    <span>{actividad.hora}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1">
+                                    <MapPin size={14} />
+                                    <span>{actividad.lugar}</span>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <MapPin size={14} />
-                                  <span>{actividad.lugar}</span>
+                                <div className="flex flex-col gap-1 items-end">
+                                  <TipoBadge tipo={actividad.tipo} />
+                                  {actividad.tipo == "competencia" && <TipoCompetenciaBadge tipo={actividad.tipoCompetencia || "otro"} />}
                                 </div>
                               </div>
                             </div>
+                            <div className="w-5">
                             {actividad.enfrentamientos && actividad.tipo === "competencia" && (
                               <CollapsibleTrigger className="rounded-full p-1 hover:bg-zinc-700">
                                 <ChevronDown className="h-5 w-5 text-zinc-400" />
                               </CollapsibleTrigger>
                             )}
+                            </div>
                           </div>
                         </div>
 
@@ -183,7 +191,13 @@ export default function CalendarioActividades() {
                               <div className="mb-2 flex items-center gap-1">
                                 <Users size={14} className="text-zinc-400" />
                                 <span className="text-sm font-medium text-zinc-300">
-                                  {actividad.tipoCompetencia === "enfrentamiento" ? "Enfrentamientos:" : "Grupos de equipos:"}
+                                  {actividad.tipoCompetencia === "enfrentamiento" 
+                                  ? "Enfrentamientos:" 
+                                  : actividad.tipoCompetencia === "grupal" 
+                                  ? "Grupos de equipos:"
+                                  : actividad.tipoCompetencia === "individual" 
+                                  ? "Orden de participación:"
+                                  : <span className="italic">Participan todos los equipos en grupo</span>}
                                 </span>
                               </div>
                               <div className="space-y-2">
@@ -221,12 +235,37 @@ export default function CalendarioActividades() {
                                       {actividad.grupos.map((grupo, index) => (
                                         <div key={grupo.id} className="bg-zinc-700 p-2 rounded my-3">
                                           <h5 className="text-xs font-medium text-zinc-300 mb-2">Grupo {index + 1}</h5>
-                                          <div className="flex-wrap gap-2">
+                                          <div className="flex flex-col flex-wrap gap-2">
                                             {grupo.equipos.map((equipoCode) => (
                                               <div
                                                 key={equipoCode}
                                                 className="flex items-center gap-1 bg-zinc-600 px-2 py-1 rounded text-xs"
                                               >
+                                                <div
+                                                  className="w-2 h-2 rounded-full"
+                                                  style={{ backgroundColor: getColorEquipo(equipoCode) }}
+                                                ></div>
+                                                <span>{getTeamName(equipoCode)}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {actividad.tipoCompetencia === "individual" && actividad.grupos.length > 0 && (
+                                  <div>
+                                    <div className="space-y-3">
+                                      {actividad.grupos.map((grupo) => (
+                                        <div key={grupo.id} className="bg-zinc-700 p-2 rounded my-3">
+                                          <div className="flex flex-col flex-wrap gap-2">
+                                            {grupo.equipos.map((equipoCode, pos) => (
+                                              <div
+                                                key={equipoCode}
+                                                className="flex items-center gap-1 bg-zinc-600 px-2 py-1 rounded text-xs"
+                                              >
+                                                <label className="bg-zinc-700 rounded py-1 px-2 mr-1">{pos +1}</label>
                                                 <div
                                                   className="w-2 h-2 rounded-full"
                                                   style={{ backgroundColor: getColorEquipo(equipoCode) }}

@@ -221,6 +221,14 @@ html {
   background-color: #9333ea;
 }
 
+.bg-lime-600 {
+  background-color: #65a30d;
+}
+
+.bg-red-600 {
+  background-color: #dc2626;
+}
+
 /* Mejoras para textos */
 .text-zinc-300 {
   color: #d4d4d8 !important;

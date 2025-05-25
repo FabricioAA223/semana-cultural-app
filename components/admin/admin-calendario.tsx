@@ -270,13 +270,13 @@ export default function AdminCalendario() {
       case "red":
         return "#c0392b"
       case "black":
-        return "#2c3e50"
+        return "#000"
       case "green":
         return "#27ae60"
       case "purple":
         return "#8e44ad"
-      case "gray":
-        return "#95a5a6"
+      case "white":
+        return "#fff"
       default:
         return "#777777"
     }
@@ -345,8 +345,10 @@ export default function AdminCalendario() {
                           <div className="flex flex-col items-start text-left">
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-white">{actividad.titulo}</span>
+                            </div>
+                            <div className="flex flex-col gap-1">
                               <span
-                                className={`text-xs px-2 py-0.5 rounded-full ${
+                                className={`text-xs px-2 py-0.5 rounded-full w-fit ${
                                   actividad.tipo === "competencia"
                                     ? "bg-blue-600"
                                     : actividad.tipo === "evento"
@@ -358,16 +360,22 @@ export default function AdminCalendario() {
                               </span>
                               {actividad.tipo === "competencia" && (
                                 <span
-                                  className={`text-xs px-2 py-0.5 rounded-full ${
+                                  className={`text-xs px-2 py-0.5 rounded-full w-fit ${
                                     actividad.tipoCompetencia === "enfrentamiento" ? "bg-amber-600" : "bg-teal-600"
                                   }`}
                                 >
-                                  {actividad.tipoCompetencia === "enfrentamiento" ? "1vs1" : "Grupal"}
+                                  {actividad.tipoCompetencia === "enfrentamiento" 
+                                  ? "Duelo" 
+                                  : actividad.tipoCompetencia === "grupal"
+                                  ? "Por grupos"
+                                  : actividad.tipoCompetencia === "todos" 
+                                  ? "Todos"
+                                  : "Individual"}
                                 </span>
                               )}
-                            </div>
-                            <div className="text-xs text-zinc-400 mt-1">
-                              {actividad.hora} - {actividad.lugar}
+                              <div className="text-xs text-zinc-400 mt-1">
+                                {actividad.hora} - {actividad.lugar}
+                              </div>
                             </div>
                           </div>
                         </AccordionTrigger>
@@ -539,7 +547,13 @@ export default function AdminCalendario() {
                       Enfrentamiento directo (1 vs 1)
                     </SelectItem>
                     <SelectItem value="grupal" className="focus:bg-zinc-600 focus:text-white">
-                      Competencia grupal
+                      Competencia por grupos
+                    </SelectItem>
+                    <SelectItem value="todos" className="focus:bg-zinc-600 focus:text-white">
+                      Todos contra todos
+                    </SelectItem>
+                    <SelectItem value="individual" className="focus:bg-zinc-600 focus:text-white">
+                      Competencia individual
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -692,7 +706,7 @@ export default function AdminCalendario() {
               </div>
             )}
 
-          {actividadSeleccionada.tipo === "competencia" && actividadSeleccionada.tipoCompetencia === "grupal" && (
+          {actividadSeleccionada.tipo === "competencia" && (actividadSeleccionada.tipoCompetencia === "grupal" || actividadSeleccionada.tipoCompetencia === "individual") && (
             <div className="space-y-3 pt-2 border-t border-zinc-700">
               <div className="flex justify-between items-center">
                 <h4 className="text-sm font-medium text-zinc-300">Grupos de equipos</h4>
