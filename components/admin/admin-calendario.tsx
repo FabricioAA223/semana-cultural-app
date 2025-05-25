@@ -451,6 +451,33 @@ export default function AdminCalendario() {
                                     </div>
                                   </div>
                                 )}
+
+                                {actividad.tipoCompetencia === "individual" && actividad.grupos.length > 0 && (
+                                  <div>
+                                    <h4 className="text-sm font-medium text-zinc-300 mb-2">Orden</h4>
+                                    <div className="space-y-3">
+                                      {actividad.grupos.map((grupo) => (
+                                        <div key={grupo.id} className="bg-zinc-700 p-2 rounded my-3">
+                                          <div className="flex flex-col flex-wrap gap-2">
+                                            {grupo.equipos.map((equipoCode, pos) => (
+                                              <div
+                                                key={equipoCode}
+                                                className="flex items-center gap-1 bg-zinc-600 px-2 py-1 rounded text-xs"
+                                              >
+                                                <label className="bg-zinc-700 rounded py-1 px-2 mr-1">{pos +1}</label>
+                                                <div
+                                                  className="w-2 h-2 rounded-full"
+                                                  style={{ backgroundColor: getColorEquipo(equipoCode) }}
+                                                ></div>
+                                                <span>{getNombreEquipo(equipoCode)}</span>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
 
