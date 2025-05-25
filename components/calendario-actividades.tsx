@@ -202,7 +202,7 @@ export default function CalendarioActividades() {
                               </div>
                               <div className="space-y-2">
                                 {actividad.tipoCompetencia === "enfrentamiento" &&
-                                  actividad.enfrentamientos.length > 0 && (
+                                  actividad.enfrentamientos.length > 0 ? (
                                     <div>
                                       {actividad.enfrentamientos.map((enfrentamiento, index) => (
                                         <div
@@ -228,6 +228,8 @@ export default function CalendarioActividades() {
                                       ))}
                                     </div>
                                   )
+                                  :
+                                  <label className="text-sm font-medium text-zinc-300 italic">Por definir...</label>
                                 }
                                 {actividad.tipoCompetencia === "grupal" && actividad.grupos.length > 0 && (
                                   <div>
