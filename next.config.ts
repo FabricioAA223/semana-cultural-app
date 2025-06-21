@@ -18,4 +18,7 @@ module.exports = withPWA({
   compiler: {
     styledComponents: true,
   },
+  images: {
+    domains: ['firebasestorage.googleapis.com'], // Reemplazá con el dominio real, ej. 'res.cloudinary.com'
+  },
 });

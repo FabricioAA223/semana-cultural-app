@@ -9,6 +9,7 @@ import { storage } from "@/lib/firebase" // Asegúrate que la ruta es correcta
 import { useData } from "@/context/DataContext"
 import { getColorByTeamName } from "@/utils/equiposColors"
 import { TeamExtended } from "@/types"
+import Image from "next/image"
 
 export default function TeamRanking2() {
   const [teamsWithLogos, setTeamsWithLogos] = useState<TeamExtended[]>([])
@@ -115,11 +116,12 @@ export default function TeamRanking2() {
                       <div className="flex items-center relative z-10">
                         <span className="font-medium">{equipo.name}</span>
                       </div>
-                      <img
+                     <Image
                         src={equipo.logo}
                         alt={`Logo de ${equipo.name}`}
                         className="absolute inset-0 opacity-60 object-contain h-full left-auto"
-                        style={{width:'70px'}}
+                        width={70}
+                        height={70}
                       />
                     </td>
                     <td className="py-3 px-2 text-right font-bold">{equipo.score}</td>
