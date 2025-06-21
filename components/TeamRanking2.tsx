@@ -63,7 +63,7 @@ export default function TeamRanking2() {
 
   return (
     <div className="max-w-md text-white m-auto">
-      <Card className="border-none bg-transparent gap-2">
+      <Card className="border-none bg-transparent gap-2 pt-0">
         <CardHeader className="pt-2">
           <CardTitle className="text-2xl font-bold text-center text-white">Tabla de Clasificación</CardTitle>
         </CardHeader>
@@ -107,7 +107,7 @@ export default function TeamRanking2() {
                     key={index}
                     className="border-t border-zinc-700 hover:bg-zinc-800 transition-colors text-white"
                     style={{
-                      background: `linear-gradient(90deg, ${equipo.color}22 0%, transparent 100%)`, height: '72px'
+                      background: `linear-gradient(90deg, ${equipo.color}42 0%, transparent 100%)`, height: '72px'
                     }}
                   >
                     <td className="py-3 font-bold text-center">{index + 1}</td>
@@ -118,7 +118,8 @@ export default function TeamRanking2() {
                       <img
                         src={equipo.logo}
                         alt={`Logo de ${equipo.name}`}
-                        className="absolute inset-0 opacity-10 object-contain w-full h-full"
+                        className="absolute inset-0 opacity-60 object-contain h-full left-auto"
+                        style={{width:'70px'}}
                       />
                     </td>
                     <td className="py-3 px-2 text-right font-bold">{equipo.score}</td>
