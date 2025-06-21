@@ -11,7 +11,7 @@ import { Lock, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
 // PIN de administrador (en una aplicación real, esto estaría en el servidor)
-const ADMIN_PIN = "123456"
+const ADMIN_PIN = "210625"
 
 export default function AdminLoginPage() {
   const [pin, setPin] = useState("")
