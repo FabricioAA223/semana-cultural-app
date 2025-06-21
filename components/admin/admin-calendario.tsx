@@ -190,7 +190,7 @@ export default function AdminCalendario() {
     }
   }
 
-  const handleInputChange = (campo: keyof Actividad, valor: any) => {
+  const handleInputChange = <K extends keyof Actividad>(campo: K, valor: Actividad[K]) => {
     if (actividadSeleccionada) {
       setActividadSeleccionada({
         ...actividadSeleccionada,
