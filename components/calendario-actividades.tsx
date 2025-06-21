@@ -87,7 +87,7 @@ const agruparPorFecha = (actividades: Actividad[]) => {
   return Object.entries(grupos)
     .sort(([fechaA], [fechaB]) => new Date(fechaA).getTime() - new Date(fechaB).getTime())
     .map(([fecha, acts], index) => {
-      const diaNombre = new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long' });
+      const diaNombre = new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long', timeZone: "UTC" });
       return {
         fecha,
         nombre: `Día ${index + 1}`,
@@ -146,7 +146,7 @@ export default function CalendarioActividades() {
                   className="text-xs py-2 data-[state=active]:bg-zinc-700 grid gap-0"
                 >
                   {dia.nombre}
-                  <label style={{padding:'0', margin:'0', fontSize:'9px', color:'gray'}}>{dia.dia}</label>
+                  <label style={{fontSize:'9px', color:'gray'}}>{dia.dia}</label>
                 </TabsTrigger>
               ))}
             </TabsList>
