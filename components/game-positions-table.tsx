@@ -120,6 +120,7 @@ export default function GamePositionsTable() {
                   </thead>
                   <tbody>
                     {califications.map((item) => (
+                      item.equipo.length > 0 && 
                       <React.Fragment key={item.posicion}>
                         <tr
                           key={`${item.posicion}`}
@@ -137,16 +138,11 @@ export default function GamePositionsTable() {
                               {item.equipo.map((team, teamIndex) => (
                                 <div
                                   key={teamIndex}
-                                  className="relative font-medium text-sm sm:text-base truncate max-w-[230px] sm:max-w-[200px]"
+                                  className="font-medium text-sm sm:text-base truncate max-w-[190px]"
                                   style={{
-                                    backgroundImage: `url(/placeholder.svg?height=30&width=30)`,
-                                    backgroundSize: "20px 20px",
-                                    backgroundRepeat: "no-repeat",
-                                    backgroundPosition: "left center",
-                                    paddingLeft: "28px",
-                                    backgroundColor: `${getColorByTeamName(team)}45`,
+                                    backgroundColor: `${getColorByTeamName(team)}65`,
                                     borderRadius: "4px",
-                                    padding: "6px 20px",
+                                    padding: "6px 10px",
                                   }}
                                 >
                                   {getTeamName(team)}

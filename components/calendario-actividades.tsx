@@ -64,6 +64,8 @@ const TipoCompetenciaBadge = ({ tipo }: { tipo: string }) => {
       return <Badge>Otro</Badge>
     case "individual":
       return <Badge className="bg-lime-600">Individual</Badge>
+    case "escenica":
+      return <Badge className="bg-purple-600">Artística</Badge>
     case "todos":
       return null
     default:
@@ -84,11 +86,15 @@ const agruparPorFecha = (actividades: Actividad[]) => {
   // Convertir a array ordenado por fecha
   return Object.entries(grupos)
     .sort(([fechaA], [fechaB]) => new Date(fechaA).getTime() - new Date(fechaB).getTime())
-    .map(([fecha, acts], index) => ({
-      fecha,
-      nombre: `Día ${index + 1}`,
-      actividades: acts,
-    }))
+    .map(([fecha, acts], index) => {
+      const diaNombre = new Date(fecha).toLocaleDateString('es-ES', { weekday: 'long' });
+      return {
+        fecha,
+        nombre: `Día ${index + 1}`,
+        dia: diaNombre.charAt(0).toUpperCase() + diaNombre.slice(1), // Capitaliza
+        actividades: acts
+      }
+    })
 }
 
 
@@ -96,7 +102,7 @@ export default function CalendarioActividades() {
   const { teams, activities, loading } = useData();
   const [diaActivo, setDiaActivo] = useState("Día 1")
   const [actividadesFiltradas, setActividadesFiltradas] = useState<Actividad[]>([])
-  const [diasActividades, setDiasActividades] = useState<{ fecha: string, nombre: string, actividades: Actividad[] }[]>([])
+  const [diasActividades, setDiasActividades] = useState<{ fecha: string, dia: string, nombre: string, actividades: Actividad[] }[]>([])
 
   useEffect(() => {
     const agrupadas = agruparPorFecha(activities)
@@ -107,7 +113,7 @@ export default function CalendarioActividades() {
   useEffect(() => {
     const diaSeleccionado = diasActividades.find((dia) => dia.nombre === diaActivo)
     if (diaSeleccionado) {
-      setActividadesFiltradas(diaSeleccionado.actividades.sort((a, b) => a.hora.localeCompare(b.hora)))
+      setActividadesFiltradas(diaSeleccionado.actividades.sort((a, b) => a.orden - b.orden))
     }
   }, [diasActividades, diaActivo])
 
@@ -137,9 +143,10 @@ export default function CalendarioActividades() {
                 <TabsTrigger
                   key={dia.nombre}
                   value={dia.nombre}
-                  className="text-xs py-2 data-[state=active]:bg-zinc-700"
+                  className="text-xs py-2 data-[state=active]:bg-zinc-700 grid gap-0"
                 >
                   {dia.nombre}
+                  <label style={{padding:'0', margin:'0', fontSize:'9px', color:'gray'}}>{dia.dia}</label>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -158,16 +165,18 @@ export default function CalendarioActividades() {
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
                               <h3 className="font-semibold text-white">{actividad.titulo}</h3>
-                              <div className="flex items-center gap-2">
+                              <div className="flex gap-2">
                                 <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300 flex-1">
-                                  <div className="flex items-center gap-1">
-                                    <Clock size={14} />
-                                    <span>{actividad.hora}</span>
-                                  </div>
                                   <div className="flex items-center gap-1">
                                     <MapPin size={14} />
                                     <span>{actividad.lugar}</span>
                                   </div>
+                                  {actividad.hora.length > 0 &&
+                                    <div className="flex items-center gap-1">
+                                      <Clock size={14} />
+                                      <span>{actividad.hora}</span>
+                                    </div>
+                                  }
                                 </div>
                                 <div className="flex flex-col gap-1 items-end">
                                   <TipoBadge tipo={actividad.tipo} />
@@ -195,7 +204,7 @@ export default function CalendarioActividades() {
                                   ? "Enfrentamientos:" 
                                   : actividad.tipoCompetencia === "grupal" 
                                   ? "Grupos de equipos:"
-                                  : actividad.tipoCompetencia === "individual" 
+                                  : actividad.tipoCompetencia === "individual" || actividad.tipoCompetencia === "escenica" 
                                   ? "Orden de participación:"
                                   : <span className="italic">Participan todos los equipos en grupo</span>}
                                 </span>
@@ -257,7 +266,7 @@ export default function CalendarioActividades() {
                                     </div>
                                   </div>
                                 )}
-                                {actividad.tipoCompetencia === "individual" && actividad.grupos.length > 0 && (
+                                {actividad.tipoCompetencia === "individual" || actividad.tipoCompetencia === "escenica" && actividad.grupos.length > 0 && (
                                   <div>
                                     <div className="space-y-3">
                                       {actividad.grupos.map((grupo) => (

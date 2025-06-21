@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Save, Loader2, Plus, Trash2, Clock, MapPin } from "lucide-react"
+import { Save, Loader2, Plus, Trash2, Clock, MapPin, ListOrdered } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { toast } from "sonner"
@@ -84,6 +84,7 @@ export default function AdminCalendario() {
       titulo: "",
       fecha: new Date().toISOString().split("T")[0],
       hora: "10:00 AM",
+      orden: 0,
       lugar: "",
       tipo: "competencia",
       tipoCompetencia: "enfrentamiento",
@@ -189,7 +190,7 @@ export default function AdminCalendario() {
     }
   }
 
-  const handleInputChange = (campo: keyof Actividad, valor: string) => {
+  const handleInputChange = (campo: keyof Actividad, valor: any) => {
     if (actividadSeleccionada) {
       setActividadSeleccionada({
         ...actividadSeleccionada,
@@ -205,7 +206,7 @@ export default function AdminCalendario() {
     if (
       !actividadSeleccionada.titulo ||
       !actividadSeleccionada.fecha ||
-      !actividadSeleccionada.hora ||
+      !actividadSeleccionada.orden ||
       !actividadSeleccionada.lugar
     ) {
       toast.error("Error al guardar", {
@@ -335,7 +336,7 @@ export default function AdminCalendario() {
                   </div>
 
                   <Accordion type="single" collapsible className="space-y-3">
-                    {grupo.actividades.map((actividad) => (
+                    {grupo.actividades.sort((a, b) => a.orden - b.orden).map((actividad) => (
                       <AccordionItem
                         key={actividad.id}
                         value={actividad.id}
@@ -370,11 +371,13 @@ export default function AdminCalendario() {
                                   ? "Por grupos"
                                   : actividad.tipoCompetencia === "todos" 
                                   ? "Todos"
+                                  : actividad.tipoCompetencia === "escenica" 
+                                  ? "Artística"
                                   : "Individual"}
                                 </span>
                               )}
                               <div className="text-xs text-zinc-400 mt-1">
-                                {actividad.hora} - {actividad.lugar}
+                                Orden: {actividad.orden}, {actividad.hora.length > 0 ? `${actividad.hora} - ` : ""}{actividad.lugar}
                               </div>
                             </div>
                           </div>
@@ -382,9 +385,15 @@ export default function AdminCalendario() {
                         <AccordionContent className="px-4 py-3 border-t border-zinc-700">
                           <div className="space-y-3">
                             <div className="grid grid-cols-2 gap-2 text-sm">
-                              <div className="flex items-center gap-1 text-zinc-300">
-                                <Clock size={14} />
-                                <span>{actividad.hora}</span>
+                              {actividad.hora.length > 0 &&
+                                <div className="flex items-center gap-1 text-zinc-300">
+                                  <Clock size={14} />
+                                  <span>{actividad.hora}</span>
+                                </div>
+                              }
+                              <div className="flex items-center gap-1 text-zinc-300  col-span-2">
+                                  <ListOrdered size={14} />
+                                  <span>{actividad.orden}</span>
                               </div>
                               <div className="flex items-center gap-1 text-zinc-300 col-span-2">
                                 <MapPin size={14} />
@@ -582,6 +591,9 @@ export default function AdminCalendario() {
                     <SelectItem value="individual" className="focus:bg-zinc-600 focus:text-white">
                       Competencia individual
                     </SelectItem>
+                    <SelectItem value="escenica" className="focus:bg-zinc-600 focus:text-white">
+                      Presentación artística
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -599,13 +611,22 @@ export default function AdminCalendario() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-300">Hora *</label>
+              <label className="text-sm font-medium text-zinc-300">Hora</label>
               <Input
                 value={actividadSeleccionada.hora}
                 onChange={(e) => handleInputChange("hora", e.target.value)}
                 className="bg-zinc-700 border-zinc-600 text-white"
                 placeholder="Ej: 10:00 AM"
-                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-300">Orden</label>
+              <Input
+                value={actividadSeleccionada.orden}
+                onChange={(e) => handleInputChange("orden", e.target.value)}
+                className="bg-zinc-700 border-zinc-600 text-white"
+                placeholder="Ej: 1"
               />
             </div>
 
@@ -733,7 +754,7 @@ export default function AdminCalendario() {
               </div>
             )}
 
-          {actividadSeleccionada.tipo === "competencia" && (actividadSeleccionada.tipoCompetencia === "grupal" || actividadSeleccionada.tipoCompetencia === "individual") && (
+          {actividadSeleccionada.tipo === "competencia" && (actividadSeleccionada.tipoCompetencia === "grupal" || actividadSeleccionada.tipoCompetencia === "individual" || actividadSeleccionada.tipoCompetencia === "escenica") && (
             <div className="space-y-3 pt-2 border-t border-zinc-700">
               <div className="flex justify-between items-center">
                 <h4 className="text-sm font-medium text-zinc-300">Grupos de equipos</h4>

@@ -34,9 +34,10 @@ export interface  Actividad {
   titulo: string
   fecha: string
   hora: string
+  orden: number
   lugar: string
   tipo: "competencia" | "evento" | "entrenamiento"
-  tipoCompetencia?: "enfrentamiento" | "grupal" | "individual" | "todos" // Nuevo campo para diferenciar tipos de competencia
+  tipoCompetencia?: "enfrentamiento" | "grupal" | "individual" | "todos"  | "escenica" // Nuevo campo para diferenciar tipos de competencia
   descripcion?: string
   enfrentamientos: Enfrentamiento[] // Para competencias tipo "enfrentamiento"
   grupos: GrupoEquipos[] // Para competencias tipo "grupal"

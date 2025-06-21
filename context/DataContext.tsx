@@ -61,6 +61,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         titulo: doc.data().titulo,
         fecha: doc.data().fecha,
         hora: doc.data().hora,
+        orden: doc.data().orden,
         lugar: doc.data().lugar,
         tipo: doc.data().tipo,
         tipoCompetencia: doc.data().tipoCompetencia,
