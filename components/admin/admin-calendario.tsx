@@ -552,7 +552,7 @@ export default function AdminCalendario() {
               <label className="text-sm font-medium text-zinc-300">Tipo de actividad *</label>
               <Select
                 value={actividadSeleccionada.tipo}
-                onValueChange={(value) => handleInputChange("tipo", value as string)}
+                onValueChange={(value) => handleInputChange("tipo", value as Actividad["tipo"])}
               >
                 <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white">
                   <SelectValue placeholder="Selecciona una opción" />
@@ -573,7 +573,7 @@ export default function AdminCalendario() {
                 <label className="text-sm font-medium text-zinc-300">Tipo de competencia *</label>
                 <Select
                   value={actividadSeleccionada.tipoCompetencia || "enfrentamiento"}
-                  onValueChange={(value) => handleInputChange("tipoCompetencia", value as string)}
+                  onValueChange={(value) => handleInputChange("tipoCompetencia", value as Actividad["tipoCompetencia"])}
                 >
                   <SelectTrigger className="bg-zinc-700 border-zinc-600 text-white">
                     <SelectValue  placeholder="Selecciona una opción"/>
@@ -624,7 +624,8 @@ export default function AdminCalendario() {
               <label className="text-sm font-medium text-zinc-300">Orden</label>
               <Input
                 value={actividadSeleccionada.orden}
-                onChange={(e) => handleInputChange("orden", e.target.value)}
+                type="number"
+                onChange={(e) => handleInputChange("orden", Number(e.target.value))}
                 className="bg-zinc-700 border-zinc-600 text-white"
                 placeholder="Ej: 1"
               />
