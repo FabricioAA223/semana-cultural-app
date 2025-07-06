@@ -65,7 +65,7 @@ export default function TeamRanking2() {
   return (
     <div className="max-w-md text-white m-auto">
       <Card className="border-none bg-transparent gap-2 pt-0">
-        <CardHeader className="pt-2">
+        <CardHeader className="pt-3">
           <CardTitle className="text-2xl font-bold text-center text-white">Tabla de Clasificación</CardTitle>
         </CardHeader>
         <CardContent>
@@ -73,7 +73,7 @@ export default function TeamRanking2() {
             <table className="w-full">
               <thead>
                 <tr className="bg-zinc-800 text-zinc-300 text-sm">
-                  <th className="px-2 text-left">
+                  <th className="px-2 text-left py-2">
                     <div className="flex items-center">
                       <span className="mr-1">Pos</span>
                     </div>

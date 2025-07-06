@@ -132,7 +132,7 @@ export default function CalendarioActividades() {
 
   return (
     <div className="w-full mx-auto bg-zinc-900 text-white">
-      <Card className="border-none bg-transparent rounded-none sm:rounded-lg sm:mx-auto sm:max-w-md">
+      <Card className="border-none bg-transparent rounded-none sm:rounded-lg mx-auto max-w-md">
         <CardHeader className="pb-2 px-3 sm:px-6">
           <CardTitle className="text-xl sm:text-2xl font-bold text-center">Calendario de Actividades</CardTitle>
         </CardHeader>
@@ -166,7 +166,7 @@ export default function CalendarioActividades() {
                             <div className="flex-1">
                               <h3 className="font-semibold text-white">{actividad.titulo}</h3>
                               <div className="flex gap-2">
-                                <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 text-sm text-zinc-300 flex-1">
+                                <div className="flex flex-col sm:gap-4 mt-1 text-sm text-zinc-300 flex-1">
                                   <div className="flex items-center gap-1">
                                     <MapPin size={14} />
                                     <span>{actividad.lugar}</span>

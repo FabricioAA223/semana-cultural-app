@@ -54,7 +54,7 @@ const Navbar = () => {
             }`}
           >
             {item.icon(pathname === item.path)}
-            <span className="text-xs mt-1">{item.name}</span>
+            <span className="text-xs mt-1 text-center">{item.name}</span>
           </Link>
         ))}
       </div>
